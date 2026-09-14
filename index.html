@@ -6,6 +6,7 @@
 <title>كشكول الدرجات</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
     --paper:#F7F1E1;
@@ -587,6 +588,8 @@ function renderClassDetail(classId, term){
     ${termSeg}
     ${isThird? `<div class="note">هذه المرحلة بدون أعمال سنة — الدرجة كاملة من امتحان نهاية الفصل فقط.</div>`:''}
     <button class="btn secondary" onclick="printClassResults('${classId}','${term}')">🖨 طباعة نتيجة الفصل</button>
+    <div style="height:8px;"></div>
+    <button class="btn secondary" onclick="exportClassExcel('${classId}','${term}')">📊 تصدير النتيجة إلى إكسل</button>
     <div style="height:10px;"></div>
     <div class="section-title">الطلاب (${students.length})</div>
     ${rows}
@@ -723,6 +726,62 @@ function printClassResults(classId, term){
     ${studentsHtml}
   `;
   setTimeout(()=>{ window.print(); }, 80);
+}
+
+function exportClassExcel(classId, term){
+  if(typeof XLSX==='undefined'){ showToast('تعذّر تحميل مكتبة إكسل، تأكد من الاتصال بالإنترنت'); return; }
+  const cls = state.classes.find(c=>c.id===classId);
+  if(!cls) return;
+  const isThird = cls.level==='third';
+  const students = studentsOf(classId).slice().sort((a,b)=> a.name.localeCompare(b.name,'ar'));
+  if(students.length===0){ showToast('لا يوجد طلاب في هذا الفصل بعد'); return; }
+  const termLabel = term==='term1'? 'الفصل الدراسي الأول' : 'الفصل الدراسي الثاني';
+
+  let rows;
+  if(isThird){
+    const cfg = state.settings.third;
+    const mx = term==='term1'? cfg.term1Max : cfg.term2Max;
+    rows = [[ 'اسم الطالب', `درجة الامتحان (من ${mx})` ]];
+    students.forEach(s=>{
+      const c = computeThird(s.id);
+      const val = term==='term1'? c.t1 : c.t2;
+      rows.push([ s.name, round1(val) ]);
+    });
+  } else {
+    const cfg = termSettings(term);
+    rows = [[
+      'اسم الطالب',
+      `تقييم أسبوعي (من ${cfg.weeklyMax})`,
+      `مواظبة وسلوك (من ${cfg.attendanceMax})`,
+      `كراسة الواجب (من ${cfg.notebookMax})`,
+      `اختبار الشهر الأول (من ${cfg.month1Max})`,
+      `اختبار الشهر الثاني (من ${cfg.month2Max})`,
+      `امتحان نهاية الفصل (من ${cfg.examMax})`,
+      'الإجمالي'
+    ]];
+    students.forEach(s=>{
+      const c = computeTerm(s.id, term);
+      rows.push([
+        s.name,
+        round1(c.weekly),
+        round1(c.attendance),
+        round1(c.notebook),
+        round1(c.month1),
+        round1(c.month2),
+        round1(c.exam),
+        `${round1(c.total)} / ${c.max}`
+      ]);
+    });
+  }
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = rows[0].map((_,i)=> i===0? {wch:22} : {wch:20});
+  const wb = XLSX.utils.book_new();
+  wb.Workbook = { Views: [{ RTL: true }] };
+  XLSX.utils.book_append_sheet(wb, ws, 'النتيجة');
+  const fileName = `نتيجة ${cls.name} - ${termLabel}.xlsx`;
+  XLSX.writeFile(wb, fileName);
+  showToast('جاري تنزيل ملف الإكسل');
 }
 
 function renderStudentDetail(studentId, term){
