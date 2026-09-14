@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كشكول الدرجات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F1E1;
+    --paper-line:#EAE0C4;
+    --card:#FFFDF7;
+    --ink:#1F2A38;
+    --ink-soft:#5A6472;
+    --board:#1E3D34;
+    --board-2:#295247;
+    --red:#B23A2E;
+    --gold:#C98F1F;
+    --good:#2F7A4F;
+    --border:#DCD0AA;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--paper-line) 1px, transparent 1px);
+    background-size: 100% 34px;
+    color:var(--ink);
+    font-family:'Cairo',sans-serif;
+    min-height:100vh;
+    padding-bottom:40px;
+  }
+  h1,h2,h3,.display{
+    font-family:'Aref Ruqaa', serif;
+  }
+  .topbar{
+    background:var(--board);
+    color:#F7F1E1;
+    padding:16px 16px 18px;
+    position:sticky;
+    top:0;
+    z-index:20;
+    box-shadow:0 3px 10px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .topbar .title-wrap{display:flex;align-items:center;gap:10px;min-width:0;}
+  .topbar h1{font-size:22px;margin:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .topbar .sub{font-size:11.5px;opacity:.75;margin-top:1px;font-family:'Cairo',sans-serif;}
+  .iconbtn{
+    background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.25);
+    color:#F7F1E1;
+    border-radius:10px;
+    width:38px;height:38px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:17px;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .iconbtn:active{background:rgba(255,255,255,.22);}
+  .backrow{display:flex;align-items:center;gap:8px;}
+  .container{max-width:720px;margin:0 auto;padding:14px 14px 8px;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:14px;
+    margin-bottom:12px;
+    box-shadow:0 1px 0 rgba(0,0,0,.03);
+  }
+  .empty{
+    text-align:center;
+    padding:30px 16px;
+    color:var(--ink-soft);
+    font-size:14.5px;
+    line-height:1.9;
+  }
+  .empty .emoji{font-size:30px;display:block;margin-bottom:6px;}
+  .class-row, .student-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:12px 14px;
+    margin-bottom:10px;
+    cursor:pointer;
+    position:relative;
+    border-inline-start:5px solid var(--board);
+  }
+  .class-row.lvl-second{border-inline-start-color:var(--gold);}
+  .class-row.lvl-third{border-inline-start-color:var(--red);}
+  .class-row:active,.student-row:active{background:#FBF5E8;}
+  .class-row .cname{font-size:16.5px;font-weight:700;}
+  .class-row .clvl{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .class-row .ccount{font-size:12px;color:var(--ink-soft);}
+  .chev{color:var(--ink-soft);font-size:14px;}
+  .row-actions{display:flex;gap:8px;align-items:center;}
+  .del-x{
+    color:var(--red);
+    font-size:16px;
+    width:28px;height:28px;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:8px;
+    flex-shrink:0;
+  }
+  .del-x:active{background:#F4E4E1;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    background:var(--board);
+    color:#fff;
+    border:none;
+    border-radius:11px;
+    padding:12px 16px;
+    font-family:'Cairo',sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+    width:100%;
+  }
+  .btn:active{background:var(--board-2);}
+  .btn.secondary{
+    background:transparent;
+    color:var(--board);
+    border:1.5px solid var(--board);
+  }
+  .btn.red{background:var(--red);}
+  .btn.small{width:auto;padding:9px 14px;font-size:13.5px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:5px;font-weight:600;}
+  .field input[type=text], .field input[type=number], .field select, .field textarea{
+    width:100%;
+    padding:11px 12px;
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    font-family:'Cairo',sans-serif;
+    font-size:15px;
+    background:#fff;
+    color:var(--ink);
+  }
+  .field textarea{min-height:90px;resize:vertical;font-family:'Cairo',sans-serif;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:2px solid var(--gold);outline-offset:1px;}
+  .seg{
+    display:flex;
+    background:#EDE4CB;
+    border-radius:11px;
+    padding:4px;
+    margin-bottom:14px;
+    gap:4px;
+  }
+  .seg button{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:10px 6px;
+    border-radius:8px;
+    font-family:'Cairo',sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .seg button.active{background:var(--board);color:#fff;}
+  .score-chip{
+    background:#EFE7CE;
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:6px 12px;
+    font-size:13px;
+    font-weight:700;
+    color:var(--board);
+    white-space:nowrap;
+  }
+  .score-chip.warn{background:#F5DEDA;color:var(--red);border-color:#E4BEB6;}
+  .stu-name{font-weight:700;font-size:15.5px;}
+  .stu-sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .section-title{
+    font-size:14px;
+    font-weight:700;
+    color:var(--ink-soft);
+    margin:18px 0 8px 2px;
+  }
+  .week-card{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:12px;
+    margin-bottom:10px;
+    background:#FFFDF7;
+  }
+  .week-head{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .week-head .wk-label{font-weight:800;font-size:14.5px;color:var(--board);}
+  .grid4{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .mini-field label{font-size:11.5px;color:var(--ink-soft);display:block;margin-bottom:3px;}
+  .mini-field input{
+    width:100%;padding:8px 9px;border:1.3px solid var(--border);border-radius:8px;
+    font-family:'Cairo',sans-serif;font-size:14px;text-align:center;
+  }
+  .days-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+  .day-chip{
+    border:1.3px solid var(--border);
+    border-radius:8px;
+    padding:6px 9px;
+    font-size:12px;
+    cursor:pointer;
+    color:var(--ink-soft);
+    background:#fff;
+  }
+  .day-chip.present{background:var(--good);color:#fff;border-color:var(--good);}
+  .summary-card{
+    background:var(--board);
+    color:#fff;
+    border-radius:14px;
+    padding:16px;
+    margin:6px 0 16px;
+  }
+  .summary-card .big{font-family:'Aref Ruqaa',serif;font-size:34px;font-weight:700;line-height:1;}
+  .summary-card .big small{font-size:16px;font-family:'Cairo',sans-serif;opacity:.8;}
+  .summary-card .breakdown{
+    display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;
+    margin-top:12px;font-size:12.5px;
+  }
+  .summary-card .breakdown div{display:flex;justify-content:space-between;opacity:.92;border-bottom:1px dashed rgba(255,255,255,.2);padding-bottom:4px;}
+  .bar-outer{background:rgba(255,255,255,.2);height:6px;border-radius:4px;margin-top:10px;overflow:hidden;}
+  .bar-inner{background:var(--gold);height:100%;}
+  .third-card{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px;border:1px solid var(--border);border-radius:12px;background:#fff;margin-bottom:12px;
+  }
+  .third-card .lbl{font-weight:700;font-size:14.5px;}
+  .third-card input{width:90px;padding:9px;border:1.3px solid var(--border);border-radius:9px;text-align:center;font-family:'Cairo',sans-serif;font-size:15px;}
+  .note{
+    font-size:12px;color:var(--ink-soft);line-height:1.9;background:#F1E9D2;border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:14px;
+  }
+  .settings-group{margin-bottom:22px;}
+  .settings-group h3{font-size:15px;margin:0 0 10px;color:var(--board);}
+  .fab-space{height:6px;}
+  .toast{
+    position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+    background:var(--board);color:#fff;padding:10px 18px;border-radius:30px;
+    font-size:13.5px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25);
+    z-index:100;opacity:0;transition:opacity .25s, transform .25s;pointer-events:none;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px);}
+  .loading{text-align:center;padding:60px 20px;color:var(--ink-soft);}
+
+  /* -------- print report -------- */
+  #printArea{display:none;}
+  @media print{
+    body{background:#fff !important;}
+    body *{visibility:hidden;}
+    #printArea, #printArea *{visibility:visible;}
+    #printArea{display:block !important; position:absolute; top:0; left:0; width:100%; padding:14px; background:#fff; color:#111;}
+    .print-header{text-align:center; margin-bottom:18px; border-bottom:2px solid #333; padding-bottom:10px;}
+    .print-header h2{font-family:'Aref Ruqaa',serif; margin:0 0 4px; font-size:24px;}
+    .print-header .meta{font-size:13px; color:#333;}
+    .print-student{page-break-inside:avoid; margin-bottom:16px; border:1px solid #999; border-radius:6px; padding:10px 12px;}
+    .print-student .pname{font-weight:800; font-size:15px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;}
+    .print-total-badge{font-weight:800; font-size:14px; border:1.5px solid #333; border-radius:6px; padding:3px 10px;}
+    .print-table{width:100%; border-collapse:collapse; font-size:12.5px; margin-top:4px;}
+    .print-table td, .print-table th{border:1px solid #bbb; padding:5px 7px; text-align:center;}
+    .print-table th{background:#eee;}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="printArea"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- storage helpers ---------------- */
+const STORE_KEY = 'gradebook-data';
+
+function hasPlatformStorage(){
+  return typeof window.storage === 'object' && window.storage
+    && typeof window.storage.get === 'function'
+    && typeof window.storage.set === 'function';
+}
+
+async function storageGet(key){
+  if(hasPlatformStorage()){
+    try{
+      const res = await window.storage.get(key, false);
+      return res ? res.value : null;
+    }catch(e){
+      return null; // key not found yet, or transient error
+    }
+  }
+  try{
+    return window.localStorage.getItem(key);
+  }catch(e){
+    return null;
+  }
+}
+
+async function storageSet(key, value){
+  if(hasPlatformStorage()){
+    try{
+      const res = await window.storage.set(key, value, false);
+      if(res) return true;
+    }catch(e){ /* fall through to local backup */ }
+  }
+  try{
+    window.localStorage.setItem(key, value);
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+function defaultState(){
+  return {
+    settings:{
+      subjectName:'المادة',
+      term1:{weeklyMax:20, month1Max:15, month2Max:15, attendanceMax:10, notebookMax:10, examMax:30},
+      term2:{weeklyMax:20, month1Max:15, month2Max:15, attendanceMax:10, notebookMax:10, examMax:30},
+      third:{term1Max:140, term2Max:140}
+    },
+    classes:[],
+    students:[],
+    grades:{},
+    examsThird:{}
+  };
+}
+
+let state = null;
+let saving = false, pendingSave = false;
+
+async function loadState(){
+  try{
+    const raw = await storageGet(STORE_KEY);
+    if(raw){
+      state = JSON.parse(raw);
+      // backfill any missing default keys for forward-compat
+      const d = defaultState();
+      state.settings = Object.assign(d.settings, state.settings||{});
+      state.settings.term1 = Object.assign(d.settings.term1, state.settings.term1||{});
+      state.settings.term2 = Object.assign(d.settings.term2, state.settings.term2||{});
+      state.settings.third = Object.assign(d.settings.third, state.settings.third||{});
+      state.classes = state.classes||[];
+      state.students = state.students||[];
+      state.grades = state.grades||{};
+      state.examsThird = state.examsThird||{};
+    } else {
+      state = defaultState();
+    }
+  }catch(e){
+    state = defaultState();
+  }
+}
+
+async function saveState(){
+  if(saving){ pendingSave = true; return; }
+  saving = true;
+  const ok = await storageSet(STORE_KEY, JSON.stringify(state));
+  if(!ok){
+    showToast('تعذّر حفظ البيانات على هذا الجهاز');
+  }
+  saving = false;
+  if(pendingSave){ pendingSave = false; saveState(); }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._tm);
+  showToast._tm = setTimeout(()=>t.classList.remove('show'), 1600);
+}
+
+function uid(){ return 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+/* ---------------- app data model ---------------- */
+const LEVELS = {first:'الأولى الإعدادية', second:'الثانية الإعدادية', third:'الثالثة الإعدادية'};
+const LEVEL_CLASS = {first:'', second:'lvl-second', third:'lvl-third'};
+const DAYS = [{k:'sun',l:'أحد'},{k:'mon',l:'اثنين'},{k:'tue',l:'ثلاثاء'},{k:'wed',l:'أربعاء'},{k:'thu',l:'خميس'}];
+
+function studentsOf(classId){ return state.students.filter(s=>s.classId===classId); }
+
+function ensureGrades(studentId){
+  if(!state.grades[studentId]) state.grades[studentId] = {
+    term1:{weeks:[], exam:0}, term2:{weeks:[], exam:0}
+  };
+  return state.grades[studentId];
+}
+function ensureThird(studentId){
+  if(!state.examsThird[studentId]) state.examsThird[studentId] = {term1:0, term2:0};
+  return state.examsThird[studentId];
+}
+
+function termSettings(termKey){ return state.settings[termKey]; }
+
+function computeTerm(studentId, termKey){
+  const g = ensureGrades(studentId)[termKey];
+  const cfg = termSettings(termKey);
+  const n = g.weeks.length;
+  const avg = (field)=> n? g.weeks.reduce((s,w)=> s+(Number(w[field])||0), 0)/n : 0;
+  const attendance = avg('attendance');
+  const weekly = avg('weekly');
+  const notebook = avg('notebook');
+  const month1 = Number(g.month1)||0;
+  const month2 = Number(g.month2)||0;
+  const exam = Number(g.exam)||0;
+  const catTotal = attendance+weekly+notebook+month1+month2;
+  const catMax = cfg.attendanceMax+cfg.weeklyMax+cfg.notebookMax+cfg.month1Max+cfg.month2Max;
+  const total = catTotal+exam;
+  const max = catMax+cfg.examMax;
+  return {attendance, weekly, notebook, month1, month2, exam, catTotal, catMax, total, max};
+}
+
+function computeThird(studentId){
+  const e = ensureThird(studentId);
+  const cfg = state.settings.third;
+  const t1 = Number(e.term1)||0, t2 = Number(e.term2)||0;
+  return {t1, t2, t1max:cfg.term1Max, t2max:cfg.term2Max, total:t1+t2, max:cfg.term1Max+cfg.term2Max};
+}
+
+/* ---------------- routing / render ---------------- */
+let view = {screen:'classes'}; // {screen:'classes'} | {screen:'class', classId} | {screen:'student', studentId, term} | {screen:'settings'}
+
+function nav(v){ view = v; render(); window.scrollTo(0,0); }
+
+function render(){
+  const app = document.getElementById('app');
+  if(view.screen==='classes') app.innerHTML = renderClasses();
+  else if(view.screen==='class') app.innerHTML = renderClassDetail(view.classId, view.term||'term1');
+  else if(view.screen==='student') app.innerHTML = renderStudentDetail(view.studentId, view.term||'term1');
+  else if(view.screen==='settings') app.innerHTML = renderSettings();
+  bindGlobalActions();
+}
+
+/* ---------------- screens ---------------- */
+function renderClasses(){
+  const classes = state.classes;
+  let list = '';
+  if(classes.length===0){
+    list = `<div class="empty"><span class="emoji">📘</span>لا توجد فصول بعد.<br>ابدأ بإضافة أول فصل دراسي.</div>`;
+  } else {
+    list = classes.map(c=>{
+      const cnt = studentsOf(c.id).length;
+      return `<div class="class-row ${LEVEL_CLASS[c.level]}" onclick="nav({screen:'class', classId:'${c.id}', term:'term1'})">
+        <div>
+          <div class="cname">${esc(c.name)}</div>
+          <div class="clvl">${LEVELS[c.level]}</div>
+        </div>
+        <div class="row-actions">
+          <span class="ccount">${cnt} طالب</span>
+          <span class="del-x" onclick="event.stopPropagation(); deleteClass('${c.id}')">✕</span>
+          <span class="chev">‹</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  return `
+  <div class="topbar">
+    <div class="title-wrap">
+      <span style="font-size:22px;">📗</span>
+      <div>
+        <h1>كشكول الدرجات</h1>
+        <div class="sub">${esc(state.settings.subjectName)}</div>
+      </div>
+    </div>
+    <div class="iconbtn" onclick="nav({screen:'settings'})">⚙</div>
+  </div>
+  <div class="container">
+    <div class="section-title">الفصول الدراسية</div>
+    ${list}
+    <div id="addClassForm"></div>
+    <button class="btn" onclick="toggleAddClass()">+ إضافة فصل جديد</button>
+  </div>`;
+}
+
+let addClassOpen = false;
+function toggleAddClass(){
+  addClassOpen = !addClassOpen;
+  render();
+  if(addClassOpen){
+    document.getElementById('addClassForm').innerHTML = `
+      <div class="card">
+        <div class="field">
+          <label>اسم الفصل</label>
+          <input type="text" id="newClassName" placeholder="مثال: 1/3 أو فصل الأمل">
+        </div>
+        <div class="field">
+          <label>المرحلة</label>
+          <select id="newClassLevel">
+            <option value="first">الأولى الإعدادية</option>
+            <option value="second">الثانية الإعدادية</option>
+            <option value="third">الثالثة الإعدادية</option>
+          </select>
+        </div>
+        <button class="btn" onclick="addClass()">حفظ الفصل</button>
+      </div>`;
+    setTimeout(()=>document.getElementById('newClassName')?.focus(), 50);
+  }
+}
+function addClass(){
+  const name = document.getElementById('newClassName').value.trim();
+  const level = document.getElementById('newClassLevel').value;
+  if(!name){ showToast('اكتب اسم الفصل أولاً'); return; }
+  state.classes.push({id:uid(), name, level});
+  addClassOpen = false;
+  saveState();
+  render();
+  showToast('تمت إضافة الفصل');
+}
+function deleteClass(id){
+  if(!confirm('حذف هذا الفصل وكل طلابه ودرجاتهم؟')) return;
+  const stuIds = studentsOf(id).map(s=>s.id);
+  state.classes = state.classes.filter(c=>c.id!==id);
+  state.students = state.students.filter(s=>s.classId!==id);
+  stuIds.forEach(sid=>{ delete state.grades[sid]; delete state.examsThird[sid]; });
+  saveState();
+  render();
+  showToast('تم حذف الفصل');
+}
+
+function renderClassDetail(classId, term){
+  const cls = state.classes.find(c=>c.id===classId);
+  if(!cls) return renderClasses();
+  const isThird = cls.level==='third';
+  const students = studentsOf(classId);
+
+  const termSeg = `
+    <div class="seg">
+      <button class="${term==='term1'?'active':''}" onclick="nav({screen:'class', classId:'${classId}', term:'term1'})">الفصل الأول</button>
+      <button class="${term==='term2'?'active':''}" onclick="nav({screen:'class', classId:'${classId}', term:'term2'})">الفصل الثاني</button>
+    </div>`;
+
+  let rows;
+  if(students.length===0){
+    rows = `<div class="empty"><span class="emoji">🧑‍🎓</span>لا يوجد طلاب في هذا الفصل بعد.</div>`;
+  } else {
+    rows = students.map(s=>{
+      let scoreLabel, warn=false;
+      if(isThird){
+        const c = computeThird(s.id);
+        const val = term==='term1'? c.t1 : c.t2;
+        const mx = term==='term1'? c.t1max : c.t2max;
+        scoreLabel = `${val} / ${mx}`;
+        warn = val>mx;
+      } else {
+        const c = computeTerm(s.id, term);
+        scoreLabel = `${round1(c.total)} / ${c.max}`;
+        warn = c.total>c.max;
+      }
+      return `<div class="student-row" onclick="nav({screen:'student', studentId:'${s.id}', term:'${term}'})">
+        <div>
+          <div class="stu-name">${esc(s.name)}</div>
+          <div class="stu-sub">${isThird?'درجة الامتحان':'إجمالي الفصل'}</div>
+        </div>
+        <div class="row-actions">
+          <span class="score-chip ${warn?'warn':''}">${scoreLabel}</span>
+          <span class="del-x" onclick="event.stopPropagation(); deleteStudent('${s.id}')">✕</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  return `
+  <div class="topbar">
+    <div class="backrow">
+      <div class="iconbtn" onclick="nav({screen:'classes'})">→</div>
+      <div>
+        <h1 style="font-size:19px;">${esc(cls.name)}</h1>
+        <div class="sub">${LEVELS[cls.level]}</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    ${termSeg}
+    ${isThird? `<div class="note">هذه المرحلة بدون أعمال سنة — الدرجة كاملة من امتحان نهاية الفصل فقط.</div>`:''}
+    <button class="btn secondary" onclick="printClassResults('${classId}','${term}')">🖨 طباعة نتيجة الفصل</button>
+    <div style="height:10px;"></div>
+    <div class="section-title">الطلاب (${students.length})</div>
+    ${rows}
+    <div id="addStudentForm"></div>
+    <button class="btn" onclick="toggleAddStudent('${classId}')">+ إضافة طالب</button>
+    <div style="height:8px;"></div>
+    <button class="btn secondary" onclick="toggleBulkAdd('${classId}')">إضافة عدة طلاب دفعة واحدة</button>
+    <div id="bulkAddForm"></div>
+  </div>`;
+}
+
+let addStudentOpen=false, bulkOpen=false;
+function toggleAddStudent(classId){
+  addStudentOpen = !addStudentOpen;
+  const el = document.getElementById('addStudentForm');
+  el.innerHTML = addStudentOpen? `
+    <div class="card">
+      <div class="field">
+        <label>اسم الطالب</label>
+        <input type="text" id="newStuName" placeholder="اكتب الاسم">
+      </div>
+      <button class="btn" onclick="addStudent('${classId}')">حفظ</button>
+    </div>` : '';
+  if(addStudentOpen) setTimeout(()=>document.getElementById('newStuName')?.focus(),50);
+}
+function addStudent(classId){
+  const name = document.getElementById('newStuName').value.trim();
+  if(!name){ showToast('اكتب اسم الطالب'); return; }
+  state.students.push({id:uid(), classId, name});
+  addStudentOpen=false;
+  saveState();
+  render();
+  showToast('تمت إضافة الطالب');
+}
+function toggleBulkAdd(classId){
+  bulkOpen = !bulkOpen;
+  const el = document.getElementById('bulkAddForm');
+  el.innerHTML = bulkOpen? `
+    <div class="card">
+      <div class="field">
+        <label>اكتب اسمًا في كل سطر</label>
+        <textarea id="bulkNames" placeholder="أحمد محمد\nسارة علي\n..."></textarea>
+      </div>
+      <button class="btn" onclick="bulkAddStudents('${classId}')">إضافة الكل</button>
+    </div>`:'';
+}
+function bulkAddStudents(classId){
+  const raw = document.getElementById('bulkNames').value;
+  const names = raw.split('\n').map(n=>n.trim()).filter(Boolean);
+  if(names.length===0){ showToast('لم يتم إدخال أسماء'); return; }
+  names.forEach(name=> state.students.push({id:uid(), classId, name}));
+  bulkOpen=false;
+  saveState();
+  render();
+  showToast(`تمت إضافة ${names.length} طالب`);
+}
+function deleteStudent(id){
+  if(!confirm('حذف هذا الطالب وكل درجاته؟')) return;
+  state.students = state.students.filter(s=>s.id!==id);
+  delete state.grades[id];
+  delete state.examsThird[id];
+  saveState();
+  render();
+  showToast('تم حذف الطالب');
+}
+
+function printClassResults(classId, term){
+  const cls = state.classes.find(c=>c.id===classId);
+  if(!cls) return;
+  const isThird = cls.level==='third';
+  const students = studentsOf(classId).slice().sort((a,b)=> a.name.localeCompare(b.name,'ar'));
+  if(students.length===0){ showToast('لا يوجد طلاب في هذا الفصل بعد'); return; }
+  const termLabel = term==='term1'? 'الفصل الدراسي الأول' : 'الفصل الدراسي الثاني';
+  const today = new Date().toLocaleDateString('ar-EG', {year:'numeric', month:'long', day:'numeric'});
+
+  let studentsHtml = '';
+  if(isThird){
+    const cfg = state.settings.third;
+    const mx = term==='term1'? cfg.term1Max : cfg.term2Max;
+    studentsHtml = students.map(s=>{
+      const c = computeThird(s.id);
+      const val = term==='term1'? c.t1 : c.t2;
+      return `
+      <div class="print-student">
+        <div class="pname">
+          <span>${esc(s.name)}</span>
+          <span class="print-total-badge">${round1(val)} / ${mx}</span>
+        </div>
+        <table class="print-table">
+          <tr><th>درجة امتحان ${term==='term1'?'الفصل الأول':'الفصل الثاني'}</th></tr>
+          <tr><td>${round1(val)} / ${mx}</td></tr>
+        </table>
+      </div>`;
+    }).join('');
+  } else {
+    const cfg = termSettings(term);
+    studentsHtml = students.map(s=>{
+      const c = computeTerm(s.id, term);
+      return `
+      <div class="print-student">
+        <div class="pname">
+          <span>${esc(s.name)}</span>
+          <span class="print-total-badge">${round1(c.total)} / ${c.max}</span>
+        </div>
+        <table class="print-table">
+          <tr>
+            <th>تقييم أسبوعي</th>
+            <th>مواظبة وسلوك</th>
+            <th>كراسة الواجب</th>
+            <th>اختبار شهر 1</th>
+            <th>اختبار شهر 2</th>
+            <th>امتحان الفصل</th>
+            <th>الإجمالي</th>
+          </tr>
+          <tr>
+            <td>${round1(c.weekly)} / ${cfg.weeklyMax}</td>
+            <td>${round1(c.attendance)} / ${cfg.attendanceMax}</td>
+            <td>${round1(c.notebook)} / ${cfg.notebookMax}</td>
+            <td>${round1(c.month1)} / ${cfg.month1Max}</td>
+            <td>${round1(c.month2)} / ${cfg.month2Max}</td>
+            <td>${round1(c.exam)} / ${cfg.examMax}</td>
+            <td><strong>${round1(c.total)} / ${c.max}</strong></td>
+          </tr>
+        </table>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('printArea').innerHTML = `
+    <div class="print-header">
+      <h2>نتيجة ${esc(cls.name)}</h2>
+      <div class="meta">${esc(state.settings.subjectName)} · ${LEVELS[cls.level]} · ${termLabel} · ${today}</div>
+    </div>
+    ${studentsHtml}
+  `;
+  setTimeout(()=>{ window.print(); }, 80);
+}
+
+function renderStudentDetail(studentId, term){
+  const stu = state.students.find(s=>s.id===studentId);
+  if(!stu) return renderClasses();
+  const cls = state.classes.find(c=>c.id===stu.classId);
+  const isThird = cls.level==='third';
+
+  const termSeg = `
+    <div class="seg">
+      <button class="${term==='term1'?'active':''}" onclick="nav({screen:'student', studentId:'${studentId}', term:'term1'})">الفصل الأول</button>
+      <button class="${term==='term2'?'active':''}" onclick="nav({screen:'student', studentId:'${studentId}', term:'term2'})">الفصل الثاني</button>
+    </div>`;
+
+  let body;
+  if(isThird){
+    const c = computeThird(studentId);
+    const e = ensureThird(studentId);
+    const curVal = term==='term1'? e.term1 : e.term2;
+    const curMax = term==='term1'? c.t1max : c.t2max;
+    const pct = curMax? Math.min(100, (Number(curVal)||0)/curMax*100) : 0;
+    body = `
+      <div class="summary-card">
+        <div class="big">${round1(curVal)} <small>/ ${curMax}</small></div>
+        <div style="opacity:.85; font-size:13px; margin-top:4px;">درجة ${term==='term1'?'الفصل الأول':'الفصل الثاني'}</div>
+        <div class="bar-outer"><div class="bar-inner" style="width:${pct}%"></div></div>
+        <div class="breakdown">
+          <div><span>مجموع العام حتى الآن</span><span>${round1(c.total)} / ${c.max}</span></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>درجة امتحان ${term==='term1'?'الفصل الأول':'الفصل الثاني'} (من ${curMax})</label>
+        <input type="number" min="0" max="${curMax}" step="0.5" value="${curVal}" onchange="updateThirdExam('${studentId}','${term}', this.value)">
+      </div>
+    `;
+  } else {
+    const cfg = termSettings(term);
+    const g = ensureGrades(studentId)[term];
+    const c = computeTerm(studentId, term);
+    const pct = c.max? Math.min(100, c.total/c.max*100) : 0;
+
+    const weeksHtml = g.weeks.length===0? `<div class="empty" style="padding:16px;"><span class="emoji">🗓️</span>لم تُضف أسابيع بعد.</div>` :
+      g.weeks.map((w,idx)=>{
+        const daysHtml = DAYS.map(d=>`<span class="day-chip ${w.days&&w.days[d.k]?'present':''}" onclick="toggleDay('${studentId}','${term}','${w.id}','${d.k}')">${d.l}</span>`).join('');
+        return `
+        <div class="week-card">
+          <div class="week-head">
+            <span class="wk-label">${esc(w.label)}</span>
+            <span class="del-x" onclick="deleteWeek('${studentId}','${term}','${w.id}')">✕</span>
+          </div>
+          <div class="grid4">
+            <div class="mini-field">
+              <label>تقييم أسبوعي (من ${cfg.weeklyMax})</label>
+              <input type="number" min="0" max="${cfg.weeklyMax}" step="0.25" value="${w.weekly}" onchange="updateWeekField('${studentId}','${term}','${w.id}','weekly', this.value)">
+            </div>
+            <div class="mini-field">
+              <label>مواظبة وسلوك (من ${cfg.attendanceMax})</label>
+              <input type="number" min="0" max="${cfg.attendanceMax}" step="0.25" value="${w.attendance}" onchange="updateWeekField('${studentId}','${term}','${w.id}','attendance', this.value)">
+            </div>
+            <div class="mini-field">
+              <label>كراسة الواجب (من ${cfg.notebookMax})</label>
+              <input type="number" min="0" max="${cfg.notebookMax}" step="0.25" value="${w.notebook}" onchange="updateWeekField('${studentId}','${term}','${w.id}','notebook', this.value)">
+            </div>
+          </div>
+          <div class="days-row">${daysHtml}</div>
+        </div>`;
+      }).join('');
+
+    body = `
+      <div class="summary-card">
+        <div class="big">${round1(c.total)} <small>/ ${c.max}</small></div>
+        <div style="opacity:.85; font-size:13px; margin-top:4px;">إجمالي ${term==='term1'?'الفصل الأول':'الفصل الثاني'}</div>
+        <div class="bar-outer"><div class="bar-inner" style="width:${pct}%"></div></div>
+        <div class="breakdown">
+          <div><span>تقييم أسبوعي</span><span>${round1(c.weekly)} / ${cfg.weeklyMax}</span></div>
+          <div><span>مواظبة وسلوك</span><span>${round1(c.attendance)} / ${cfg.attendanceMax}</span></div>
+          <div><span>كراسة الواجب</span><span>${round1(c.notebook)} / ${cfg.notebookMax}</span></div>
+          <div><span>اختبار الشهر الأول</span><span>${round1(c.month1)} / ${cfg.month1Max}</span></div>
+          <div><span>اختبار الشهر الثاني</span><span>${round1(c.month2)} / ${cfg.month2Max}</span></div>
+          <div><span>امتحان نهاية الفصل</span><span>${round1(c.exam)} / ${cfg.examMax}</span></div>
+        </div>
+      </div>
+      <div class="grid4">
+        <div class="mini-field">
+          <label>اختبار الشهر الأول (من ${cfg.month1Max})</label>
+          <input type="number" min="0" max="${cfg.month1Max}" step="0.5" value="${g.month1||0}" onchange="updateMonth('${studentId}','${term}','month1', this.value)">
+        </div>
+        <div class="mini-field">
+          <label>اختبار الشهر الثاني (من ${cfg.month2Max})</label>
+          <input type="number" min="0" max="${cfg.month2Max}" step="0.5" value="${g.month2||0}" onchange="updateMonth('${studentId}','${term}','month2', this.value)">
+        </div>
+      </div>
+      <div class="field" style="margin-top:12px;">
+        <label>درجة امتحان نهاية الفصل (من ${cfg.examMax})</label>
+        <input type="number" min="0" max="${cfg.examMax}" step="0.5" value="${g.exam}" onchange="updateExam('${studentId}','${term}', this.value)">
+      </div>
+      <div class="section-title">سجل الأسابيع (تقييم أسبوعي · مواظبة وسلوك · كراسة الواجب)</div>
+      <div class="note">كل أسبوع بيتقيّم من الدرجة الكاملة لكل بند، والدرجة النهائية للفصل = المتوسط الحسابي لكل الأسابيع (مش المجموع) — وده حسب تعليمات الوزارة.</div>
+      ${weeksHtml}
+      <button class="btn secondary" onclick="addWeek('${studentId}','${term}')">+ إضافة أسبوع</button>
+    `;
+  }
+
+  return `
+  <div class="topbar">
+    <div class="backrow">
+      <div class="iconbtn" onclick="nav({screen:'class', classId:'${cls.id}', term:'${term}'})">→</div>
+      <div>
+        <h1 style="font-size:19px;">${esc(stu.name)}</h1>
+        <div class="sub">${esc(cls.name)} · ${LEVELS[cls.level]}</div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    ${termSeg}
+    ${body}
+  </div>`;
+}
+
+function addWeek(studentId, term){
+  const g = ensureGrades(studentId)[term];
+  const n = g.weeks.length+1;
+  g.weeks.push({id:uid(), label:'الأسبوع '+n, attendance:0, weekly:0, notebook:0, days:{}});
+  saveState();
+  render();
+}
+function deleteWeek(studentId, term, weekId){
+  const g = ensureGrades(studentId)[term];
+  g.weeks = g.weeks.filter(w=>w.id!==weekId);
+  saveState();
+  render();
+}
+function updateWeekField(studentId, term, weekId, field, value){
+  const g = ensureGrades(studentId)[term];
+  const w = g.weeks.find(w=>w.id===weekId);
+  if(w) w[field] = value===''? 0 : Number(value);
+  saveState();
+  render();
+}
+function toggleDay(studentId, term, weekId, dayKey){
+  const g = ensureGrades(studentId)[term];
+  const w = g.weeks.find(w=>w.id===weekId);
+  if(w){ w.days = w.days||{}; w.days[dayKey] = !w.days[dayKey]; }
+  saveState();
+  render();
+}
+function updateExam(studentId, term, value){
+  const g = ensureGrades(studentId)[term];
+  g.exam = value===''? 0 : Number(value);
+  saveState();
+  render();
+}
+function updateMonth(studentId, term, field, value){
+  const g = ensureGrades(studentId)[term];
+  g[field] = value===''? 0 : Number(value);
+  saveState();
+  render();
+}
+function updateThirdExam(studentId, term, value){
+  const e = ensureThird(studentId);
+  e[term] = value===''? 0 : Number(value);
+  saveState();
+  render();
+}
+
+function renderSettings(){
+  const s = state.settings;
+  return `
+  <div class="topbar">
+    <div class="backrow">
+      <div class="iconbtn" onclick="nav({screen:'classes'})">→</div>
+      <h1 style="font-size:19px;">الإعدادات</h1>
+    </div>
+  </div>
+  <div class="container">
+    <div class="field">
+      <label>اسم المادة</label>
+      <input type="text" id="setSubjectName" value="${esc(s.subjectName)}" onchange="updateSetting('subjectName', this.value)">
+    </div>
+
+    <div class="note">
+      التوزيع الافتراضي هنا هو توزيع وزارة التربية والتعليم الرسمي لأولى وتانية إعدادي 2025/2026: 70 درجة لأعمال السنة (20 تقييم أسبوعي + 15 اختبار الشهر الأول + 15 اختبار الشهر الثاني + 10 مواظبة وسلوك + 10 كراسة الواجب) + 30 درجة امتحان آخر الفصل = 100. درجات التقييم الأسبوعي والمواظبة والسلوك وكراسة الواجب تُحسب بمتوسط كل الأسابيع المُسجّلة، وليس بمجموعها — طبقًا لتعليمات الوزارة. تقدر تعدّل الأرقام لو مادتك من الإدارة مقسّمة بشكل مختلف.
+    </div>
+
+    <div class="settings-group">
+      <h3>الأولى والثانية الإعدادية — الفصل الأول</h3>
+      ${termSettingsFields('term1')}
+    </div>
+    <div class="settings-group">
+      <h3>الأولى والثانية الإعدادية — الفصل الثاني</h3>
+      ${termSettingsFields('term2')}
+    </div>
+    <div class="settings-group">
+      <h3>الثالثة الإعدادية (بدون أعمال سنة)</h3>
+      <div class="grid4">
+        <div class="mini-field">
+          <label>درجة امتحان الفصل الأول</label>
+          <input type="number" min="0" value="${s.third.term1Max}" onchange="updateThirdSetting('term1Max', this.value)">
+        </div>
+        <div class="mini-field">
+          <label>درجة امتحان الفصل الثاني</label>
+          <input type="number" min="0" value="${s.third.term2Max}" onchange="updateThirdSetting('term2Max', this.value)">
+        </div>
+      </div>
+      <div class="note" style="margin-top:10px;">مجموع الشهادة الإعدادية الرسمي 280 درجة على مستوى كل المواد؛ اضبط هنا نصيب مادتك من هذا المجموع.</div>
+    </div>
+
+    <div class="settings-group">
+      <h3>منطقة الخطر</h3>
+      <button class="btn red" onclick="resetAll()">مسح كل البيانات والبدء من جديد</button>
+    </div>
+  </div>`;
+}
+function termSettingsFields(termKey){
+  const c = state.settings[termKey];
+  return `
+    <div class="grid4">
+      <div class="mini-field"><label>تقييم أسبوعي</label><input type="number" min="0" value="${c.weeklyMax}" onchange="updateTermSetting('${termKey}','weeklyMax', this.value)"></div>
+      <div class="mini-field"><label>اختبار الشهر الأول</label><input type="number" min="0" value="${c.month1Max}" onchange="updateTermSetting('${termKey}','month1Max', this.value)"></div>
+      <div class="mini-field"><label>اختبار الشهر الثاني</label><input type="number" min="0" value="${c.month2Max}" onchange="updateTermSetting('${termKey}','month2Max', this.value)"></div>
+      <div class="mini-field"><label>مواظبة وسلوك</label><input type="number" min="0" value="${c.attendanceMax}" onchange="updateTermSetting('${termKey}','attendanceMax', this.value)"></div>
+      <div class="mini-field"><label>كراسة الواجب</label><input type="number" min="0" value="${c.notebookMax}" onchange="updateTermSetting('${termKey}','notebookMax', this.value)"></div>
+      <div class="mini-field"><label>امتحان نهاية الفصل</label><input type="number" min="0" value="${c.examMax}" onchange="updateTermSetting('${termKey}','examMax', this.value)"></div>
+    </div>`;
+}
+function updateSetting(key, value){ state.settings[key]=value; saveState(); }
+function updateTermSetting(termKey, field, value){
+  state.settings[termKey][field] = Number(value)||0;
+  saveState(); render();
+}
+function updateThirdSetting(field, value){
+  state.settings.third[field] = Number(value)||0;
+  saveState(); render();
+}
+function resetAll(){
+  if(!confirm('سيتم حذف كل الفصول والطلاب والدرجات نهائيًا. متابعة؟')) return;
+  state = defaultState();
+  saveState();
+  nav({screen:'classes'});
+  showToast('تم مسح البيانات');
+}
+
+/* ---------------- helpers ---------------- */
+function esc(str){
+  return String(str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function round1(n){
+  n = Number(n)||0;
+  return Math.round(n*100)/100;
+}
+function bindGlobalActions(){ /* reserved for future delegated listeners */ }
+
+/* ---------------- boot ---------------- */
+async function boot(){
+  document.getElementById('app').innerHTML = `<div class="loading">جاري تحميل البيانات…</div>`;
+  await loadState();
+  render();
+}
+boot();
+</script>
+</body>
+</html>
